@@ -11,7 +11,7 @@ import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    MongooseModule.forRoot(process.env.MONGO_URI, {
+    MongooseModule.forRoot(process.env.MONGO_URI || "mongodb+srv://omgportal:ziCZBcqoUtIVMcsx@cluster0.kc09o.mongodb.net/booksAPI?retryWrites=true&w=majority", {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useCreateIndex: true,
