@@ -51,19 +51,31 @@ export class AuthService {
         return null;
     }
 
-    async resetPassword(resetToken, userID, password) {
+    async resetPassword(resetToken, password) {
         let updatedUser;
-        if (resetToken !== userID) {
-            throw new UnauthorizedException('Wrong reset token');
-        }
+        let tokenVerif;
         try {
-            updatedUser = await this.userModel.findById(userID).exec();
+            tokenVerif = this.jwtService.verify(resetToken);
         } catch (error) {
-            throw new NotFoundException('Could not find User.');
+            throw new UnauthorizedException('Invalid token');
+        }
+
+        try {
+            updatedUser = await this.userModel.findById(this.jwtService.verify(resetToken).user._id).exec();
+        } catch (error) {
+            throw new NotFoundException('Invalid token.');
         }
         const hashedPassword = await bcrypt.hash(password, 10);
         updatedUser.password = hashedPassword;
         updatedUser.save();
+    }
+
+    async forgot(email: string) {
+        const user = await this.userModel.findOne({ email });
+        if (!user) {
+            throw new UnauthorizedException('User does not exist');
+        }
+        return this.jwtService.sign({ user });
     }
 
 }
