@@ -36,19 +36,18 @@ export class AuthController {
         return req.user;
     }
 
-    @UseGuards(JwtAuthGuard)
-    @Get('forgot')
-    forgot(@Request() req) {
-        return req.user._id;
+    @Post('forgot')
+    forgot(
+        @Body('email') email: string,
+    ) {
+        return this.authService.forgot(email);
     }
 
-    @UseGuards(JwtAuthGuard)
     @Post('reset')
     resetPassword(
-        @Request() req,
         @Body('resetToken') resetToken: string,
         @Body('newPassword') newPassword: string,
     ) {
-        return this.authService.resetPassword(resetToken, req.user._id, newPassword);
+        return this.authService.resetPassword(resetToken, newPassword);
     }
 }
